@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Heart Animation</title>
+<style>
+    body {
+        margin: 0;
+        background: black;
+        overflow: hidden;
+    }
+    canvas {
+        display: block;
+    }
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const centerX = canvas.width / 2;
+const centerY = canvas.height / 2 + 50;
+
+const colors = ["#ff66b2", "#ff99cc", "#ff4da6", "#ff80bf", "#ff1a8c"];
+let points = [];
+
+function heartX(t) {
+    return 16 * Math.pow(Math.sin(t), 3);
+}
+
+function heartY(t) {
+    return (
+        13 * Math.cos(t)
+        - 5 * Math.cos(2 * t)
+        - 2 * Math.cos(3 * t)
+        - Math.cos(4 * t)
+    );
+}
+
+// توليد نقاط القلب
+const scale = 20;
+for (let i = 0; i < 720; i++) {
+    let ang = (i / 2) * Math.PI / 180;
+    let x = heartX(ang) * scale;
+    let y = heartY(ang) * scale;
+    points.push({ x, y });
+}
+
+let i = 0;
+
+// رسم الخطوط من المنتصف
+function drawLines() {
+    if (i > 2000) {
+        drawOutline();
+        return;
+    }
+
+    const p = points[Math.floor(Math.random() * points.length)];
+    const startY = Math.random() * 40 - 20;
+
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY + startY);
+    ctx.lineTo(centerX + p.x, centerY - p.y);
+    ctx.strokeStyle = colors[Math.floor(Math.random() * colors.length)];
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    i++;
+    requestAnimationFrame(drawLines);
+}
+
+// رسم حدود القلب
+function drawOutline() {
+    ctx.beginPath();
+    points.forEach((p, index) => {
+        let x = centerX + p.x;
+        let y = centerY - p.y;
+        if (index === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.strokeStyle = "deeppink";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+}
+
+drawLines();
+</script>
+
+</body>
+</html>
